@@ -1,0 +1,440 @@
+{
+    "golden_box": [
+        {
+            "ryu_ryu_pteranodon": {
+                "name": "ryu_ryu_no_mi_model_pteranodon",
+                "format_name": "Ryu Ryu no Mi, Model: Pteranodon"
+            }
+        },
+        {
+            "hito_hito_daibutsu": {
+                "name": "hito_hito_no_mi_model_daibutsu",
+                "format_name": "Hito Hito no Mi, Model: Daibutsu"
+            }
+        },
+        {
+            "tori_tori_phoenix": {
+                "name": "tori_tori_no_mi_model_phoenix",
+                "format_name": "Hito Hito no Mi, Model: Phoenix"
+            }
+        },
+        {
+            "jiki_jiki": {
+                "name": "jiki_jiki_no_mi",
+                "format_name": "Jiki Jiki no Mi"
+            }
+        },
+        {
+            "wara_wara": {
+                "name": "wara_wara_no_mi",
+                "format_name": "Wara Wara no Mi"
+            }
+        },
+        {
+            "ito_ito": {
+                "name": "ito_ito_no_mi",
+                "format_name": "Ito Ito no Mi"
+            }
+        },
+        {
+            "zushi_zushi": {
+                "name": "zushi_zushi_no_mi",
+                "format_name": "Zushi Zushi no Mi"
+            }
+        },
+        {
+            "doku_doku": {
+                "name": "doku_doku_no_mi",
+                "format_name": "Doku Doku no Mi"
+            }
+        },
+        {
+            "gura_gura": {
+                "name": "gura_gura_no_mi",
+                "format_name": "Gura Gura no Mi"
+            }
+        },
+        {
+            "yuki_yuki": {
+                "name": "yuki_yuki_no_mi",
+                "format_name": "Yuki Yuki no Mi"
+            }
+        },
+        {
+            "yami_yami": {
+                "name": "yami_yami_no_mi",
+                "format_name": "Yami Yami no Mi"
+            }
+        },
+        {
+            "gasu_gasu": {
+                "name": "gasu_gasu_no_mi",
+                "format_name": "Gasu Gasu no Mi"
+            }
+        },
+        {
+            "magu_magu": {
+                "name": "magu_magu_no_mi",
+                "format_name": "Magu Magu no Mi"
+            }
+        },
+        {
+            "suna_suna": {
+                "name": "suna_suna_no_mi",
+                "format_name": "Suna Suna no Mi"
+            }
+        },
+        {
+            "goro_goro": {
+                "name": "goro_goro_no_mi",
+                "format_name": "Goro Goro no Mi"
+            }
+        },
+        {
+            "moku_moku": {
+                "name": "moku_moku_no_mi",
+                "format_name": "Moku Moku no Mi"
+            }
+        },
+        {
+            "pika_pika": {
+                "name": "pika_pika_no_mi",
+                "format_name": "Pika Pika no Mi"
+            }
+        },
+        {
+            "hie_hie": {
+                "name": "hie_hie_no_mi",
+                "format_name": "Hie Hie no Mi"
+            }
+        },
+        {
+            "mera_mera": {
+                "name": "mera_mera_no_mi",
+                "format_name": "Mera Mera no Mi"
+            }
+        }
+    ],
+    "iron_box": [
+        {
+            "ryu_ryu_allosaurus": {
+                "name": "ryu_ryu_no_mi_model_allosaurus",
+                "format_name": "Ryu Ryu no Mi, Model: Allosaurus"
+            }
+        },
+        {
+            "sai_sai": {
+                "name": "sai_sai_no_mi",
+                "format_name": "Sai Sai no Mi"
+            }
+        },
+        {
+            "sara_sara_axolotl": {
+                "name": "sara_sara_no_mi_model_axolotl",
+                "format_name": "Sara Sara no Mi, Model: Axolotl"
+            }
+        },
+        {
+            "ryu_ryu_brachiosaurus": {
+                "name": "ryu_ryu_no_mi_model_brachiosaurus",
+                "format_name": "Ryu Ryu no Mi, Model: Brachiosaurus"
+            }
+        },
+        {
+            "neko_neko_leopard": {
+                "name": "neko_neko_no_mi_model_leopard",
+                "format_name": "Neko Neko no Mi, Model: Leopard"
+            }
+        },
+        {
+            "zou_zou_mammoth": {
+                "name": "zou_zou_no_mi_model_mammoth",
+                "format_name": "Zou Zou no Mi, Model: Mammoth"
+            }
+        },
+        {
+            "ushi_ushi_bison": {
+                "name": "ushi_ushi_no_mi_model_bison",
+                "format_name": "Ushi Ushi no Mi, Model: Bison"
+            }
+        },
+        {
+            "zou_zou": {
+                "name": "zou_zou_no_mi",
+                "format_name": "Zou Zou no Mi"
+            }
+        },
+        {
+            "mane_mane": {
+                "name": "mane_mane_no_mi",
+                "format_name": "Mane Mane no Mi"
+            }
+        },
+        {
+            "karu_karu": {
+                "name": "karu_karu_no_mi",
+                "format_name": "Karu Karu no Mi"
+            }
+        },
+        {
+            "oto_oto": {
+                "name": "oto_oto_no_mi",
+                "format_name": "Oto Oto no Mi"
+            }
+        },
+        {
+            "bara_bara": {
+                "name": "bara_bara_no_mi",
+                "format_name": "Bara Bara no Mi"
+            }
+        },
+        {
+            "hana_hana": {
+                "name": "hana_hana_no_mi",
+                "format_name": "Hana Hana no Mi"
+            }
+        },
+        {
+            "kira_kira": {
+                "name": "kira_kira_no_mi",
+                "format_name": "Kira Kira no Mi"
+            }
+        },
+        {
+            "beta_beta": {
+                "name": "beta_beta_no_mi",
+                "format_name": "Beta Beta no Mi"
+            }
+        },
+        {
+            "pero_pero": {
+                "name": "pero_pero_no_mi",
+                "format_name": "Pero Pero no Mi"
+            }
+        },
+        {
+            "netsu_netsu": {
+                "name": "netsu_netsu_no_mi",
+                "format_name": "Netsu Netsu no Mi"
+            }
+        },
+        {
+            "sui_sui": {
+                "name": "sui_sui_no_mi",
+                "format_name": "Sui Sui no Mi"
+            }
+        },
+        {
+            "doa_doa": {
+                "name": "doa_doa_no_mi",
+                "format_name": "Doa Doa no Mi"
+            }
+        },
+        {
+            "yomi_yomi": {
+                "name": "yomi_yomi_no_mi",
+                "format_name": "Yomi Yomi no Mi"
+            }
+        },
+        {
+            "mero_mero": {
+                "name": "mero_mero_no_mi",
+                "format_name": "Mero Mero no Mi"
+            }
+        },
+        {
+            "supa_supa": {
+                "name": "supa_supa_no_mi",
+                "format_name": "Supa Supa no Mi"
+            }
+        },
+        {
+            "horo_horo": {
+                "name": "horo_horo_no_mi",
+                "format_name": "Horo Horo no Mi"
+            }
+        },
+        {
+            "doru_doru": {
+                "name": "doru_doru_no_mi",
+                "format_name": "Doru Doru no Mi"
+            }
+        },
+        {
+            "kage_kage": {
+                "name": "kage_kage_no_mi",
+                "format_name": "Kage Kage no Mi"
+            }
+        },
+        {
+            "bomu_bomu": {
+                "name": "bomu_bomu_no_mi",
+                "format_name": "Bomu Bomu no Mi"
+            }
+        },
+        {
+            "nikyu_nikyu": {
+                "name": "nikyu_nikyu_no_mi",
+                "format_name": "Nikyu Nikyu no Mi"
+            }
+        },
+        {
+            "ope_ope": {
+                "name": "ope_ope_no_mi",
+                "format_name": "Ope Ope no Mi"
+            }
+        },
+        {
+            "gomu_gomu": {
+                "name": "gomu_gomu_no_mi",
+                "format_name": "Gomu Gomu no Mi"
+            }
+        }
+    ],
+    "wooden_box": [
+        {
+            "kame_kame": {
+                "name": "kame_kame_no_mi",
+                "format_name": "Kame Kame no Mi"
+            }
+        },
+        {
+            "hito_hito": {
+                "name": "hito_hito_no_mi",
+                "format_name": "Hito Hito no Mi"
+            }
+        },
+        {
+            "ushi_ushi_giraffe": {
+                "name": "ushi_ushi_no_mi_model_giraffe",
+                "format_name": "Ushi Ushi no Mi, Model: Giraffe"
+            }
+        },
+        {
+            "mogu_mogu": {
+                "name": "mogu_mogu_no_mi",
+                "format_name": "Mogu Mogu no Mi"
+            }
+        },
+        {
+            "mega_mega": {
+                "name": "mega_mega_no_mi",
+                "format_name": "Mega Mega no Mi"
+            }
+        },
+        {
+            "sube_sube": {
+                "name": "sube_sube_no_mi",
+                "format_name": "Sube Sube no Mi"
+            }
+        },
+        {
+            "kobu_kobu": {
+                "name": "kobu_kobu_no_mi",
+                "format_name": "Kobu Kobu no Mi"
+            }
+        },
+        {
+            "mini_mini": {
+                "name": "mini_mini_no_mi",
+                "format_name": "Mini Mini no Mi"
+            }
+        },
+        {
+            "hiso_hiso": {
+                "name": "hiso_hiso_no_mi",
+                "format_name": "Hiso Hiso no Mi"
+            }
+        },
+        {
+            "kuku_kuku": {
+                "name": "kuku_kuku_no_mi",
+                "format_name": "Kuku Kuku no Mi"
+            }
+        },
+        {
+            "nagi_nagi": {
+                "name": "nagi_nagi_no_mi",
+                "format_name": "Nagi Nagi no Mi"
+            }
+        },
+        {
+            "awa_awa": {
+                "name": "awa_awa_no_mi",
+                "format_name": "Awa Awa no Mi"
+            }
+        },
+        {
+            "kachi_kachi": {
+                "name": "kachi_kachi_no_mi",
+                "format_name": "Kachi Kachi no Mi"
+            }
+        },
+        {
+            "chiyu_chiyu": {
+                "name": "chiyu_chiyu_no_mi",
+                "format_name": "Chiyu Chiyu no Mi"
+            }
+        },
+        {
+            "sabi_sabi": {
+                "name": "sabi_sabi_no_mi",
+                "format_name": "Chiyu Chiyu no Mi"
+            }
+        },
+        {
+            "baku_baku": {
+                "name": "baku_baku_no_mi",
+                "format_name": "Baku Baku no Mi"
+            }
+        },
+        {
+            "horu_horu": {
+                "name": "horu_horu_no_mi",
+                "format_name": "Horu Horu no Mi"
+            }
+        },
+        {
+            "kilo_kilo": {
+                "name": "kilo_kilo_no_mi",
+                "format_name": "Kilo Kilo no mi"
+            }
+        },
+        {
+            "goe_goe": {
+                "name": "goe_goe_no_mi",
+                "format_name": "Goe Goe no Mi"
+            }
+        },
+        {
+            "ori_ori": {
+                "name": "ori_ori_no_mi",
+                "format_name": "Ori Ori no Mi"
+            }
+        },
+        {
+            "bari_bari": {
+                "name": "bari_bari_no_mi",
+                "format_name": "Bari Bari no Mi"
+            }
+        },
+        {
+            "noro_noro": {
+                "name": "noro_noro_no_mi",
+                "format_name": "Noro Noro no Mi"
+            }
+        },
+        {
+            "suke_suke": {
+                "name": "suke_suke_no_mi",
+                "format_name": "Suke Suke no Mi"
+            }
+        },
+        {
+            "bane_bane": {
+                "name": "bane_bane_no_mi",
+                "format_name": "Bane Bane no Mi"
+            }
+        }
+    ]
+}

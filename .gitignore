@@ -1,0 +1,7 @@
+venv
+config.yaml
+server.json
+mineminenomi*
+__pycache__
+cache
+/database/

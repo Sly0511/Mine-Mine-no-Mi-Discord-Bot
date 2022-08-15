@@ -1,0 +1,19 @@
+# Minecraft #
+server_path: ""
+world_name: "world" # Name of the world save
+
+# Discord #
+discord_api_key: "" # Token of the Discord Bot
+discord_server_id: 0 # ID of the server the bot will be on
+bot_owners:         # People who can use owner commands on bot
+	- 0
+	- 1
+	# Expand as much as you want
+
+
+# Devil Fruits #
+devil_fruits:
+	channel: 0      # Discord Channel in which bot will send Devil Fruit Circulation
+	golden_box: 0   # Emoji ID of golden box
+	iron_box: 0     # Emoji ID of iron box
+	wooden_box: 0   # Emoji ID of wooden box
