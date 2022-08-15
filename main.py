@@ -10,10 +10,10 @@ from discord.ext import commands
 from utils import database
 from utils.configs import BotConfig
 from utils.functions import get_modules
-from utils.objects import Object
+from utils.objects import Object, Translator
 
 
-class TreasureMiner(commands.Bot):
+class MineMineNoMi(commands.Bot):
     def __init__(self):
         super().__init__(
             command_prefix=">",
@@ -49,6 +49,10 @@ class TreasureMiner(commands.Bot):
         print("Connected to database.")
         await database.build(self.db)
 
+    async def load_locales(self):
+        self.locale = Translator(self)
+        self.tree.set_translator(self.locale)
+
     async def load_modules(self):
         """Loads all modules."""
         for module in get_modules(self.modules_path):
@@ -59,7 +63,9 @@ class TreasureMiner(commands.Bot):
         """Bot's startup function."""
         await self.setup_constants()
         await self.load_database()
+        await self.load_locales()
         await self.load_modules()
+
         asyncio.create_task(self.change_status())
 
     async def change_status(self):
@@ -81,7 +87,7 @@ class TreasureMiner(commands.Bot):
 
 if __name__ == "__main__":
     try:
-        bot = TreasureMiner()
+        bot = MineMineNoMi()
         bot.run(reconnect=True)
     except KeyboardInterrupt:
         print("Shutting down bot...")
