@@ -51,7 +51,8 @@ class MineMineNoMi(commands.Bot):
 
     async def load_locales(self):
         self.locale = Translator(self)
-        self.tree.set_translator(self.locale)
+        self.T = self.locale.run
+        await self.tree.set_translator(self.locale)
 
     async def load_modules(self):
         """Loads all modules."""

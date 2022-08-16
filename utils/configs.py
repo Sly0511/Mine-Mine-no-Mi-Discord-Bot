@@ -10,6 +10,7 @@ class DevilFruitConfig(BaseModel):
 
 
 class BotConfig(BaseModel):
+    language: str
     server_path: Path
     world_name: str
     discord_api_key: str

@@ -5,10 +5,11 @@ from typing import Iterable
 import yaml
 from aiohttp import ClientSession
 from nbt import nbt
-from nbt.nbt import TAG_Byte, TAG_Compound, TAG_Int, TAG_List, TAG_Long, TAG_String
+from nbt.nbt import (TAG_Byte, TAG_Compound, TAG_Int, TAG_List, TAG_Long,
+                     TAG_String)
 
-from utils.objects import MinecraftPlayer, Module
 import utils.database as db
+from utils.objects import MinecraftPlayer, Module
 
 
 def chunks(l: Iterable, n: int) -> Iterable:

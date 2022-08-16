@@ -1,3 +1,6 @@
+# General #
+language: "american_english"
+
 # Minecraft #
 server_path: ""
 world_name: "world" # Name of the world save

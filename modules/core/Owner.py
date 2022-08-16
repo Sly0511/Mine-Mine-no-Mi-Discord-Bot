@@ -5,6 +5,7 @@ from datetime import datetime
 
 import discord
 from discord import app_commands
+from discord.app_commands import locale_str as T
 from discord.ext import commands
 from discord.utils import get
 from utils.checks import is_bot_owner
@@ -35,6 +36,10 @@ class Traceback(discord.ui.View):
 class Owner(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.hybrid_command(name="test")
+    async def test(self, ctx):
+        await ctx.send(await self.bot.T("hello", discord.Locale.american_english))
 
     @commands.command(hidden=True)
     @is_bot_owner()

@@ -10,6 +10,15 @@ async def get_crew(database, name: str):
         return await c.fetchone()
 
 
+async def add_crew(database, name: str, captain_uuid: str):
+    async with database.cursor() as c:
+        await c.execute(
+            "INSERT INTO Crews (name, captain_uuid) VALUES (?, ?)",
+            (name, captain_uuid),
+        )
+        await database.commit()
+
+
 async def update_captain(database, crew_name: int, player_id: str):
     async with database.cursor() as c:
         await c.execute(

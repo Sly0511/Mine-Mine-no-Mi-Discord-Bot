@@ -6,6 +6,11 @@ async def get_players(database):
         await c.execute("SELECT * FROM Players")
         return await c.fetchall()
 
+async def get_players_with_crews(database):
+    async with database.cursor() as c:
+        await c.execute("SELECT * FROM Players WHERE crew_name IS NOT NULL")
+        return await c.fetchall()
+
 
 async def insert_player(database, player_id: str, name: str):
     async with database.cursor() as c:
