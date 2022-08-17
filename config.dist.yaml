@@ -20,3 +20,10 @@ devil_fruits:
 	golden_box: 0   # Emoji ID of golden box
 	iron_box: 0     # Emoji ID of iron box
 	wooden_box: 0   # Emoji ID of wooden box
+
+# FTP Server #
+ftp:
+	host: ""
+	port: 21
+	username: "admin"
+	password: "admin"

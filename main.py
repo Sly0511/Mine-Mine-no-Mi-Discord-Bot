@@ -8,6 +8,7 @@ from aiohttp import ClientSession
 from discord.ext import commands
 
 from utils import database
+from utils.FTPImpl import FTPServer
 from utils.configs import BotConfig
 from utils.functions import get_modules
 from utils.objects import Object, Translator
@@ -41,6 +42,7 @@ class MineMineNoMi(commands.Bot):
         self.constants = Object()
         self.GOLDEN_COLOR = 0xFFD700
         self.constants.RSession = ClientSession()
+        self.constants.FTPServer = FTPServer(self.config.ftp).connect()
 
     async def load_database(self):
         database_path = self.path.joinpath("database/data.db")

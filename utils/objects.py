@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+from enum import Enum
 
 from discord import Locale, app_commands
 from pydantic import BaseModel, root_validator
@@ -13,11 +14,59 @@ class Object:
     ...
 
 
+class Races(Enum):
+    Human = "human"
+    Cyborg = "cyborg"
+    Mink = "mink"
+    Fishman = "fishman"
+
+
+class subRaces(Enum):
+    Bunny = "mink_bunny"
+    Dog = "mink_dog"
+    Lion = "mink_lion"
+
+
+class Factions(Enum):
+    Marine = "marine"
+    Pirate = "pirate"
+    BountyHunter = "bounty_hunter"
+    Revolutionary = "revolutionary"
+
+
+class FightingStyles(Enum):
+    Brawler = "brawler"
+    Swordsman = "swordsman"
+    BlackLeg = "black_leg"
+    Sniper = "sniper"
+    Doctor = "doctor"
+    ArtofWeather = "art_of_weather"
+
+
 class DevilFruit(BaseModel):
     name: str
     format_name: str
     qualified_name: str
     rarity: str
+
+
+class PlayerData(BaseModel):
+    uuid: str
+    name: str
+    race: Optional[Races]
+    sub_race: Optional[subRaces]
+    faction: Optional[Factions]
+    devil_fruits: list[DevilFruit]
+    eaten_devil_fruits: list[DevilFruit]
+    inventory_devil_fruits: list[DevilFruit]
+    belly: int
+    bounty: int
+    loyalty: int
+    doriki: int
+    harderning_haki: float
+    imbuing_haki: float
+    observation_haki: float
+    haoshoku_haki: bool
 
 
 class CrewMember(BaseModel):

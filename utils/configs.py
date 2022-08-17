@@ -9,6 +9,13 @@ class DevilFruitConfig(BaseModel):
     wooden_box: int
 
 
+class FTPConfig(BaseModel):
+    host: str
+    username: str
+    password: str
+    port: int
+
+
 class BotConfig(BaseModel):
     language: str
     server_path: Path
@@ -17,3 +24,4 @@ class BotConfig(BaseModel):
     discord_server_id: int
     bot_owners: list[int] = []
     devil_fruits: DevilFruitConfig
+    ftp: FTPConfig

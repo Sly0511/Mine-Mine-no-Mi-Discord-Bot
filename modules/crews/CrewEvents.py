@@ -10,7 +10,7 @@ class CrewEvents(commands.Cog):
 
     @commands.Cog.listener("on_mmnm_nbt_read")
     async def read_nbt_data(self, nbt: dict):
-        crews = db.crews.get_crews(self.bot.db)
+        crews = await db.crews.get_crews(self.bot.db)
         for crew_data in nbt["data"]["crews"]:
             if get(crews, name=crew_data["name"]) is None:
                 self.bot.dispatch("crew_created", Crew(**crew_data))

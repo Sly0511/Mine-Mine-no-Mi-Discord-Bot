@@ -1,6 +1,6 @@
 git+https://github.com/Rapptz/discord.py.git@668196c14c525b40d8217995c9413f49344629d4
 git+https://github.com/Rapptz/asqlite
-py-dactyl==1.1.4
 NBT==1.5.1
 PyYAML==6.0
 pydantic
+ftputil

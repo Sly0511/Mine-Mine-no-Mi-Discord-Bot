@@ -1,12 +1,12 @@
 from datetime import datetime
 from json import load
 
-from discord import Embed
+from discord import Embed, app_commands
 from discord.errors import NotFound
 from discord.ext import commands
 from discord.utils import get
 from utils.functions import chunks
-from utils.objects import DevilFruit
+from utils.objects import DevilFruit, PlayerData
 
 
 class devil_fruit_circulation(commands.Cog):
@@ -16,6 +16,7 @@ class devil_fruit_circulation(commands.Cog):
         self.bot = bot
         self.config = self.bot.config.devil_fruits
         self.fruits = list(self.list_devil_fruits(load(open("resources/fruits.json"))))
+        self.players = []
 
     async def get_editable_message(self, channel):
         """Gets a message that can be edited from the specified channel."""
@@ -35,12 +36,16 @@ class devil_fruit_circulation(commands.Cog):
                 return m
         return None
 
-    @commands.Cog.listener("on_mmnm_nbt_read")
-    async def update_df_circulation(self, nbt_data: dict):
+    @commands.Cog.listener("on_player_data")
+    async def update_df_circulation(self, player_data: list[PlayerData]):
         """Updates the devil fruit circulation."""
         await self.bot.modules_ready.wait()
+        self.players = player_data
+        devil_fruits = [
+            fruit for player in player_data for fruit in player.devil_fruits
+        ]
         channel = self.bot.get_channel(self.config.channel)
-        update = self.build_formatted_message(nbt_data)
+        update = self.build_formatted_message(devil_fruits)
         if not hasattr(self, "df_message"):
             try:
                 self.df_message = await self.get_editable_message(channel)
@@ -56,7 +61,7 @@ class devil_fruit_circulation(commands.Cog):
                 self.df_message = await channel.send(embed=update)
         await self.df_message.edit(embed=update)
 
-    def build_formatted_message(self, fruit_data: dict) -> Embed:
+    def build_formatted_message(self, unavailable_fruits: list[DevilFruit]) -> Embed:
         """Builds the formatted message to be sent to the channel."""
         emojis = {
             "golden_box_emoji": self.bot.get_emoji(self.config.golden_box),
@@ -64,7 +69,7 @@ class devil_fruit_circulation(commands.Cog):
             "wooden_box_emoji": self.bot.get_emoji(self.config.wooden_box),
         }
         embed: Embed = Embed(
-            title="{g}{i}{w}Current Devilfruit Circulation{w}{i}{g}".format(
+            title="{g}{i}{w}Available Devil Fruits {w}{i}{g}".format(
                 g=emojis["golden_box_emoji"],
                 i=emojis["iron_box_emoji"],
                 w=emojis["wooden_box_emoji"],
@@ -73,10 +78,7 @@ class devil_fruit_circulation(commands.Cog):
             color=self.bot.GOLDEN_COLOR,
             timestamp=datetime.utcnow(),
         )
-        embed.set_footer(text="Circulation is updated every 5 minutes | Last updated")
-        eaten_fruits = self.list_eaten_fruits(self.fruits, fruit_data)
-        inventory_fruits = self.list_inventory_fruits(self.fruits, fruit_data)
-        unavailable_fruits = eaten_fruits + inventory_fruits
+        embed.set_footer(text="Updated every 30 seconds | Last updated")
         order = ["golden_box", "iron_box", "wooden_box"]
         available_fruits = [
             f"{emojis.get(fruit.rarity+'_emoji')}{fruit.format_name}"
@@ -133,6 +135,45 @@ class devil_fruit_circulation(commands.Cog):
                 if fruit_name := inventory.get(f"fruit-{i}"):
                     fruits.append(get(data, qualified_name=fruit_name))
         return fruits
+
+    @app_commands.command(
+        name="devilfruit", description="Get information about who owns a devil fruit."
+    )
+    async def devilfruit(self, interaction, fruit_name: str):
+        """Gets information about a devil fruit."""
+        fruit = get(self.fruits, qualified_name=fruit_name)
+        embed = Embed(description=f"**{fruit.format_name}** Devil Fruit Owners")
+        for player in self.players:
+            if fruit in player.devil_fruits:
+                embed.add_field(
+                    name=player.name,
+                    value=f"Eaten: "
+                    + ("Yes" if fruit in player.eaten_devil_fruits else "No")
+                    + "\n"
+                    + "Inventory: "
+                    + (
+                        player.inventory_devil_fruits.count(fruit)
+                        if fruit in player.inventory_devil_fruits
+                        else "No"
+                    ),
+                    inline=True,
+                )
+        if not embed.fields:
+            embed.description += "\n\nNo one owns this Devil Fruit."
+        await interaction.response.send_message(embed=embed)
+
+    @devilfruit.autocomplete("fruit_name")
+    async def devilfruit_autocomplete(self, interaction, current: str):
+        """Autocomplete for devilfruit command."""
+        fruits = list(
+            filter(
+                lambda x: x.format_name.lower().startswith(current.lower()), self.fruits
+            )
+        )
+        return [
+            app_commands.Choice(name=fruit.format_name, value=fruit.qualified_name)
+            for fruit in sorted(fruits, key=lambda x: x.format_name)
+        ][:25]
 
 
 async def setup(bot):
