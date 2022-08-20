@@ -18,8 +18,11 @@ class FTPConfig(BaseModel):
 
 class BotConfig(BaseModel):
     language: str
+    server_name: str
+    server_ip: str
     server_path: Path
     world_name: str
+    modpack_download: str
     discord_api_key: str
     discord_server_id: int
     bot_owners: list[int] = []

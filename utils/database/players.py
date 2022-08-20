@@ -6,6 +6,7 @@ async def get_players(database):
         await c.execute("SELECT * FROM Players")
         return await c.fetchall()
 
+
 async def get_players_with_crews(database):
     async with database.cursor() as c:
         await c.execute("SELECT * FROM Players WHERE crew_name IS NOT NULL")
@@ -15,8 +16,8 @@ async def get_players_with_crews(database):
 async def insert_player(database, player_id: str, name: str):
     async with database.cursor() as c:
         await c.execute(
-            "INSERT INTO Players (uuid, name, last_updated) VALUES (?, ?, ?)",
-            (player_id, name, datetime.utcnow()),
+            "INSERT OR REPLACE INTO Players (uuid, name, last_updated) VALUES (?, ?, ?)",
+            (player_id, name, datetime.utcnow(), name, datetime.utcnow()),
         )
         await database.commit()
 
@@ -26,6 +27,15 @@ async def update_player_name(database, player_id: str, name: str):
         await c.execute(
             "UPDATE Players SET name = ? AND last_updated = ? WHERE uuid = ?",
             (name, datetime.utcnow(), player_id),
+        )
+        await database.commit()
+
+
+async def update_player_discord_id(database, player_id: str, discord_id: int):
+    async with database.cursor() as c:
+        await c.execute(
+            "UPDATE Players SET discord_id = ? AND last_updated = ? WHERE uuid = ?",
+            (discord_id, datetime.utcnow(), player_id),
         )
         await database.commit()
 

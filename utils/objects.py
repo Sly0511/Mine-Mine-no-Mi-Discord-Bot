@@ -67,6 +67,8 @@ class PlayerData(BaseModel):
     imbuing_haki: float
     observation_haki: float
     haoshoku_haki: bool
+    mob_kills: dict
+    last_seen: datetime
 
 
 class CrewMember(BaseModel):

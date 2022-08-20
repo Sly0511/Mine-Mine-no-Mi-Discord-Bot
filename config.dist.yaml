@@ -2,8 +2,11 @@
 language: "american_english"
 
 # Minecraft #
-server_path: ""
+server_name: "" # Name of the server
+server_ip: "" # Ip of the server
+server_path: "" # Path in which server is located relative to the bot (FTP usually is empty)
 world_name: "world" # Name of the world save
+modpack_download: "" # URL to download modpack
 
 # Discord #
 discord_api_key: "" # Token of the Discord Bot

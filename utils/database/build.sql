@@ -4,7 +4,6 @@ CREATE TABLE IF NOT EXISTS Players (
     name VARCHAR(16) NOT NULL UNIQUE,
     crew_name VARCHAR(16) DEFAULT NULL,
     last_updated TIMESTAMP NOT NULL,
-    bounty BIGINT DEFAULT 0,
     FOREIGN KEY (crew_name) REFERENCES Crews (name)
 );
 
