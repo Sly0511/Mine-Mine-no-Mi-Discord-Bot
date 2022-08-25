@@ -1,6 +1,6 @@
 from discord.ext import commands
-from utils import database as db
 from discord.utils import get
+from utils import database as db
 from utils.objects import Crew
 
 
@@ -10,7 +10,7 @@ class CrewEvents(commands.Cog):
 
     @commands.Cog.listener("on_mmnm_nbt_read")
     async def read_nbt_data(self, nbt: dict):
-        crews = await db.crews.get_crews(self.bot.db)
+        crews = await db.crews.get_crews(self.bot.db_path)
         for crew_data in nbt["data"]["crews"]:
             if get(crews, name=crew_data["name"]) is None:
                 self.bot.dispatch("crew_created", Crew(**crew_data))
@@ -24,13 +24,13 @@ class CrewEvents(commands.Cog):
 
     @commands.Cog.listener("on_crew_created")
     async def create_crew(self, crew: Crew):
-        await db.crews.create_crew(self.bot.db, crew.name, crew.captain_uuid)
+        await db.crews.create_crew(self.bot.db_path, crew.name, crew.captain_uuid)
         for member in crew.members:
             ...
 
     @commands.Cog.listener("on_crew_deleted")
     async def delete_crew(self, crew: Crew):
-        await db.crews.delete_crew(self.bot.db, crew.name)
+        await db.crews.delete_crew(self.bot.db_path, crew.name)
         for member in crew.members:
             ...
 

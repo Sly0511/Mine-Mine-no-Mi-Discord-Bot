@@ -1,24 +1,17 @@
 from datetime import datetime, timedelta
 from io import BytesIO
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Union
 
 import yaml
 from aiohttp import ClientSession
 from ftputil import FTPHost
 from nbt import nbt
-from nbt.nbt import (
-    TAG_Byte,
-    TAG_Compound,
-    TAG_Int,
-    TAG_List,
-    TAG_Long,
-    TAG_String,
-    TAG_Float,
-    TAG_Double,
-)
+from nbt.nbt import TAG_Byte, TAG_Compound, TAG_Double, TAG_Float, TAG_Int, TAG_List, TAG_Long, TAG_String
 
 import utils.database as db
+from utils.configs import FTPConfig
+from utils.FTPImpl import FTPServer
 from utils.objects import MinecraftPlayer, Module
 
 
@@ -82,11 +75,17 @@ def read_ftp_file(server: FTPHost, path: Path):
         return BytesIO(f.read())
 
 
-def download_ftp_file(server: FTPHost, path: str, destination: Path, mode="rb"):
+def download_ftp_file(server: Union[FTPHost, FTPConfig], path: str, destination: Path, mode="rb"):
     """Read a file from the ftp server."""
+    close = False
+    if isinstance(server, FTPConfig):
+        server = FTPServer(server).connect()
+        close = True
     if not server.path.exists(path):
         raise Exception(f"File {path} does not exist in the Server.")
     if not destination.parent.exists():
         destination.parent.mkdir(parents=True)
     server.download_if_newer(path, destination)
+    if close:
+        server.close()
     return open(destination, "rb").read()

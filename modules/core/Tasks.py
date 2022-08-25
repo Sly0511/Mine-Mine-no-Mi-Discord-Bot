@@ -1,7 +1,9 @@
+import asyncio
 import gzip
 import json
 import re
 from datetime import datetime, timedelta
+from functools import partial
 from io import BytesIO
 from pathlib import Path
 from random import sample
@@ -36,6 +38,10 @@ class Tasks(commands.Cog):
     async def read_mmnm_player_data(self):
         """Reads player data every seconds."""
         await self.bot.modules_ready.wait()
+        guild = self.bot.get_guild(self.bot.config.discord_server_id)
+        if not guild:
+            return
+        linked_role = guild.get_role(self.bot.config.link_role)
         players = []
         for player_data in self.bot.constants.FTPServer.listdir(self.player_data_path):
             if not player_data.endswith(".dat"):
@@ -49,6 +55,10 @@ class Tasks(commands.Cog):
                 self.player_data_path + player_data,
                 cache_file,
             )
+            function = partial(
+                download_ftp_file, self.bot.constants.FTPServer, self.player_data_path + player_data, cache_file
+            )
+            nbt_bytes = await self.bot.loop.run_in_executor(None, function)
             nbt_data = convert_nbt_to_dict(NBTFile(fileobj=BytesIO(nbt_bytes)))
             player_uuid = player_data.split(".")[0]
             cache_file = Path("cache/stats/{0}.json".format(player_uuid))
@@ -79,7 +89,7 @@ class Tasks(commands.Cog):
             abilities = forgeCaps["mineminenomi:ability_data"]["unlocked_abilities"]
             haoshoku = bool([x for x in abilities if x["name"] == "haoshoku_haki"])
             uuid = get_uuid_from_parts(nbt_data["UUIDMost"], nbt_data["UUIDLeast"])
-            mc_data = await get_mc_player(self.bot.db, self.bot.constants.RSession, uuid)
+            mc_data = await get_mc_player(self.bot.db_path, self.bot.constants.RSession, uuid)
             player = PlayerData(
                 uuid=uuid,
                 name=mc_data.name,
@@ -98,17 +108,23 @@ class Tasks(commands.Cog):
                 observation_haki=haki_stats["kenHakiExp"],
                 haoshoku_haki=haoshoku,
                 mob_kills=stats_data.get("stats", {}).get("minecraft:killed", {}),
+                discord_id=mc_data.discord_id,
                 last_seen=last_seen,
             )
             players.append(player)
+            if player.discord_id is not None and linked_role:
+                member = guild.get_member(player.discord_id)
+                if member and linked_role not in member.roles:
+                    asyncio.create_task(member.add_roles(linked_role))
         self.bot.dispatch("player_data", players)
         self.players = players
 
     @tasks.loop(minutes=5)
     async def retrieve_logs(self):
         """Retrieves logs every 5 minutes."""
+        return
         await self.bot.modules_ready.wait()
-        logs = {}
+        logs = []
         for log in self.bot.constants.FTPServer.listdir("logs/"):
             bytes_data = download_ftp_file(
                 self.bot.constants.FTPServer, "logs/" + log, Path("cache/logs/").joinpath(log)

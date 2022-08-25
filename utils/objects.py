@@ -14,6 +14,24 @@ class Object:
     ...
 
 
+class Rarities(Enum):
+    Godlike = 0
+    Mythic = 1
+    Legendary = 2
+    Epic = 3
+    Rare = 4
+    Common = 5
+
+
+class RarityColors(Enum):
+    Godlike = "§0"
+    Mythic = "§4"
+    Legendary = "§6"
+    Epic = "§5"
+    Rare = "§1"
+    Common = "§2"
+
+
 class Races(Enum):
     Human = "human"
     Cyborg = "cyborg"
@@ -68,7 +86,40 @@ class PlayerData(BaseModel):
     observation_haki: float
     haoshoku_haki: bool
     mob_kills: dict
+    discord_id: Optional[int]
     last_seen: datetime
+
+
+class RaceBlood(BaseModel):
+    name: str
+    tier: int
+    role: int
+    mc_color: str = None
+    tier_name: str = None
+    format_name: str = None
+    Rformat_name: str = None
+
+
+class Race(RaceBlood):
+    @root_validator(pre=True)
+    def setup_custom(cls, values: dict):
+        values["tier_name"] = Rarities(values["tier"] + 1).name
+        values["format_name"] = (5 - values["tier"]) * "⭐" + " " + values["name"]
+        values["Rformat_name"] = values["name"] + " " + (5 - values["tier"]) * "⭐"
+        values["mc_color"] = getattr(RarityColors, values["tier_name"]).value
+        return values
+
+
+class Bloodline(RaceBlood):
+    stats: list[str]
+
+    @root_validator(pre=True)
+    def setup_custom(cls, values: dict):
+        values["tier_name"] = Rarities(values["tier"]).name
+        values["format_name"] = (6 - values["tier"]) * "⭐" + " " + values["name"]
+        values["Rformat_name"] = values["name"] + " " + (6 - values["tier"]) * "⭐"
+        values["color"] = getattr(RarityColors, values["tier_name"]).value
+        return values
 
 
 class CrewMember(BaseModel):
@@ -129,9 +180,7 @@ class Module(BaseModel):
 
     @property
     def spec(self) -> str:
-        return ".".join(
-            str(self.path.relative_to(self.base_path)).split(os.sep)
-        ).replace(".py", "")
+        return ".".join(str(self.path.relative_to(self.base_path)).split(os.sep)).replace(".py", "")
 
 
 class Translator(app_commands.Translator):
@@ -143,9 +192,7 @@ class Translator(app_commands.Translator):
         self.translations = {}
         locales_path = Path("resources/locales")
         for locale in Locale:
-            locale_path = locales_path.joinpath(
-                locale.name + "." + locale.value + ".json"
-            )
+            locale_path = locales_path.joinpath(locale.name + "." + locale.value + ".json")
             if locale_path.exists():
                 self.translations[locale] = load(locale_path.open())
             else:
@@ -154,14 +201,10 @@ class Translator(app_commands.Translator):
     async def unload(self):
         ...
 
-    async def translate(
-        self, string: app_commands.locale_str, locale: Locale, _
-    ) -> Optional[str]:
+    async def translate(self, string: app_commands.locale_str, locale: Locale, _) -> Optional[str]:
         return self.translations[locale].get(
             string,
-            self.translations[getattr(Locale, self.bot.config.language)].get(
-                string, None
-            ),
+            self.translations[getattr(Locale, self.bot.config.language)].get(string, None),
         )
 
     async def run(self, string: app_commands.locale_str, locale: Locale):

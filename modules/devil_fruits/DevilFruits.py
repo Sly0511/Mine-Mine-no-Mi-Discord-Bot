@@ -27,11 +27,7 @@ class devil_fruit_circulation(commands.Cog):
                 "Make sure to edit '\modules\devil_fruit_circulation\config.yaml'".format(self.config.channel)
             )
         async for m in channel.history(limit=50):
-            if (
-                m.author == self.bot.user
-                and m.embeds
-                and m.embeds[0].description == "__**All available Devil Fruits**__"
-            ):
+            if m.author.id == self.bot.user.id and m.embeds:
                 return m
         return None
 
@@ -71,12 +67,11 @@ class devil_fruit_circulation(commands.Cog):
                 i=emojis["iron_box_emoji"],
                 w=emojis["wooden_box_emoji"],
             ),
-            description="__**All available Devil Fruits**__",
             color=self.bot.GOLDEN_COLOR,
             timestamp=datetime.utcnow(),
         )
         embed.set_footer(text="Updates every 5 minutes | Last updated")
-        order = ["golden_box", "iron_box", "wooden_box"]
+        order = ["wooden_box", "iron_box", "golden_box"]
         available_fruits = [
             f"{emojis.get(fruit.rarity+'_emoji')}{fruit.format_name}"
             for fruit in sorted(self.fruits, key=lambda x: (order.index(x.rarity), x.format_name))
@@ -84,6 +79,8 @@ class devil_fruit_circulation(commands.Cog):
         ]
         available_fruits_fields = chunks(available_fruits, 8)
         for fruits in available_fruits_fields:
+            if (len(embed.fields) - 2) % 3 in [2, 5, 8, 11, 14]:
+                embed.add_field(name="\u200b", value="\u200b")
             embed.add_field(
                 name="\u200b",
                 value="\n".join(fruits),
@@ -190,6 +187,15 @@ class devil_fruit_circulation(commands.Cog):
         await interaction.response.send_message(
             f"""```\n{json.dumps({k: v for k, v in fruits_list.items() if len(v) > 1}, indent=4)}\n```"""
         )
+
+    @app_commands.command(name="fruit_owners", description="List Devil Fruit owners.")
+    async def get_fruit_owners(self, interaction):
+        """List Devil Fruit dupes."""
+        embed = Embed(title="Devil Fruit owners", description="")
+        for player in self.players:
+            if player.devil_fruits:
+                embed.description += f"{len(player.devil_fruits)}x Devil Fruits owned by {player.name}\n"
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):

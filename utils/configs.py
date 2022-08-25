@@ -20,11 +20,18 @@ class BotConfig(BaseModel):
     language: str
     server_name: str
     server_ip: str
+    server_port: int
     server_path: Path
     world_name: str
     modpack_download: str
+    rcon_port: int
+    rcon_password: str
     discord_api_key: str
     discord_server_id: int
     bot_owners: list[int] = []
+    bot_admins: list[int] = []
+    staff_role: int
+    patreon_role: int
+    link_role: int
     devil_fruits: DevilFruitConfig
     ftp: FTPConfig

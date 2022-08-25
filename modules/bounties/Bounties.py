@@ -47,6 +47,61 @@ class Bounties(commands.Cog):
         e.description += "```"
         await ctx.send(embed=e)
 
+    @commands.hybrid_command(name="belly", description="Lists all the belly.")
+    async def belly(self, ctx):
+        e = Embed(title="Belly", description="```\n")
+        for player in filter(
+            lambda x: x.belly > 1000,
+            sorted(self.players, key=lambda x: x.belly, reverse=True),
+        ):
+            e.description += "{:<7} - {}\n".format(player.belly, player.name)
+        e.description += "```"
+        await ctx.send(embed=e)
+
+    @commands.hybrid_command(name="hardening", description="Lists all the hardening Haki.")
+    async def harderning_haki(self, ctx):
+        e = Embed(title="Hardening Haki", description="```\n")
+        for player in filter(
+            lambda x: x.harderning_haki > 0,
+            sorted(self.players, key=lambda x: x.harderning_haki, reverse=True),
+        ):
+            e.description += "{:<4} - {}\n".format(player.harderning_haki, player.name)
+        e.description += "```"
+        await ctx.send(embed=e)
+
+    @commands.hybrid_command(name="imbuing", description="Lists all the imbuing Haki.")
+    async def imbuing_haki(self, ctx):
+        e = Embed(title="Imbuing Haki", description="```\n")
+        for player in filter(
+            lambda x: x.imbuing_haki > 0,
+            sorted(self.players, key=lambda x: x.imbuing_haki, reverse=True),
+        ):
+            e.description += "{:<4} - {}\n".format(player.imbuing_haki, player.name)
+        e.description += "```"
+        await ctx.send(embed=e)
+
+    @commands.hybrid_command(name="observation", description="Lists all the observation Haki.")
+    async def observation_haki(self, ctx):
+        e = Embed(title="Observation Haki", description="```\n")
+        for player in filter(
+            lambda x: x.observation_haki > 0,
+            sorted(self.players, key=lambda x: x.observation_haki, reverse=True),
+        ):
+            e.description += "{:<4} - {}\n".format(player.observation_haki, player.name)
+        e.description += "```"
+        await ctx.send(embed=e)
+
+    @commands.hybrid_command(name="conqueror", description="Lists all the conqueror Haki.")
+    async def conqueror_haki(self, ctx):
+        e = Embed(title="Conquerors Haki", description="```\n")
+        for player in filter(
+            lambda x: x.haoshoku_haki > 0,
+            sorted(self.players, key=lambda x: x.haoshoku_haki, reverse=True),
+        ):
+            e.description += "{}\n".format(player.name)
+        e.description += "```"
+        await ctx.send(embed=e)
+
 
 async def setup(bot):
     await bot.add_cog(Bounties(bot))

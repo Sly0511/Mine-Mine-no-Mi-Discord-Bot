@@ -4,9 +4,12 @@ language: "american_english"
 # Minecraft #
 server_name: "" # Name of the server
 server_ip: "" # Ip of the server
+server_port: 25565
 server_path: "" # Path in which server is located relative to the bot (FTP usually is empty)
 world_name: "world" # Name of the world save
 modpack_download: "" # URL to download modpack
+rcon_port: 25575
+rcon_password: "admin"
 
 # Discord #
 discord_api_key: "" # Token of the Discord Bot
@@ -15,6 +18,13 @@ bot_owners:         # People who can use owner commands on bot
 	- 0
 	- 1
 	# Expand as much as you want
+bot_admins:         # People who can use administrator commands on bot
+	- 0
+	- 1
+    # Expand as much as you want
+staff_role: 0 # Role for staff
+patreon_role: 0 # Role for patreon supporters
+link_role: 0 # Role for discord linked players
 
 
 # Devil Fruits #

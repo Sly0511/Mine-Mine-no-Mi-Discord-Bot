@@ -1,0 +1,373 @@
+[
+    {
+        "name": "Vinsmoke",
+        "role": 1010750012411629658,
+        "tier": 3,
+        "stats": [
+            "+1 Resistance",
+            "+2 Regeneration",
+            "+1 Strength"
+        ]
+    },
+    {
+        "name": "Monkey",
+        "role": 1010750013195964526,
+        "tier": 2,
+        "stats": [
+            "+3 Strength",
+            "+2 Haste",
+            "+2 Speed"
+        ]
+    },
+    {
+        "name": "Roronoa",
+        "role": 1010750013552480317,
+        "tier": 3,
+        "stats": [
+            "+2 Strength",
+            "+3 Haste",
+            "+2 Speed"
+        ]
+    },
+    {
+        "name": "Charlotte",
+        "role": 1010750014697512961,
+        "tier": 2,
+        "stats": [
+            "+3 Strength",
+            "+1 Resistance",
+            "+2 Speed"
+        ]
+    },
+    {
+        "name": "Neptune",
+        "role": 1010750015649632266,
+        "tier": 4,
+        "stats": [
+            "+1 Water Breathing",
+            "+1 Conduit Power",
+            "+5 Dolphins Grace"
+        ]
+    },
+    {
+        "name": "Donquixote",
+        "role": 1010750016467505242,
+        "tier": 3,
+        "stats": [
+            "+2 Speed",
+            "+2 Jump Boost",
+            "+1 Resistance"
+        ]
+    },
+    {
+        "name": "Boa",
+        "role": 1010750017230868570,
+        "tier": 3,
+        "stats": [
+            "+4 Strength"
+        ]
+    },
+    {
+        "name": "Gol",
+        "role": 1010750018006814770,
+        "tier": 1,
+        "stats": [
+            "+3 Strength",
+            "+3 Speed",
+            "+3 Jump Boost"
+        ]
+    },
+    {
+        "name": "Portgas",
+        "role": 1010750018795360326,
+        "tier": 3,
+        "stats": [
+            "+2 Strength",
+            "+1 Resistance",
+            "+1 Fire Resistance"
+        ]
+    },
+    {
+        "name": "Edward",
+        "role": 1010750019630026773,
+        "tier": 1,
+        "stats": [
+            "+3 Strength",
+            "+1 Resistance",
+            "+1 Jump Boost"
+        ]
+    },
+    {
+        "name": "Trafalgar",
+        "role": 1010750020351447080,
+        "tier": 4,
+        "stats": [
+            "+1 Speed",
+            "+1 Regeneration"
+        ]
+    },
+    {
+        "name": "Dracule",
+        "role": 1010750021114794074,
+        "tier": 2,
+        "stats": [
+            "+3 Strength",
+            "+2 Haste"
+        ]
+    },
+    {
+        "name": "Red Haired",
+        "role": 1010750021823643751,
+        "tier": 2,
+        "stats": [
+            "+2 Strength",
+            "+2 Speed",
+            "+1 Haste",
+            "+1 Night Vision"
+        ]
+    },
+    {
+        "name": "Don",
+        "role": 1010750022591189073,
+        "tier": 5,
+        "stats": [
+            "+1 Resistance"
+        ]
+    },
+    {
+        "name": "Marshall",
+        "role": 1010750023119667243,
+        "tier": 2,
+        "stats": [
+            "+5 Luck",
+            "+1 Resistance",
+            "+1 Haste"
+        ]
+    },
+    {
+        "name": "Kozuki",
+        "role": 1010750024235352104,
+        "tier": 2,
+        "stats": [
+            "+2 Strength",
+            "+3 Speed",
+            "+1 Saturation"
+        ]
+    },
+    {
+        "name": "Gecko",
+        "role": 1010750024977764444,
+        "tier": 5,
+        "stats": [
+            "+1 Strength"
+        ]
+    },
+    {
+        "name": "Tony Tony",
+        "role": 1010750025753710652,
+        "tier": 5,
+        "stats": [
+            "+2 Speed"
+        ]
+    },
+    {
+        "name": "God",
+        "role": 1010750026571579443,
+        "tier": 4,
+        "stats": [
+            "+3 Luck",
+            "+1 Saturation"
+        ]
+    },
+    {
+        "name": "Sakazuki",
+        "role": 1010750027431415828,
+        "tier": 2,
+        "stats": [
+            "+2 Strength",
+            "+3 Jump Boost",
+            "+1 Resistance"
+        ]
+    },
+    {
+        "name": "Rocks",
+        "role": 1010750028396113940,
+        "tier": 1,
+        "stats": [
+            "+3 Strength",
+            "+1 Haste",
+            "+3 Regeneration"
+        ]
+    },
+    {
+        "name": "Mal",
+        "role": 1010750029155270727,
+        "tier": 0,
+        "stats": []
+    },
+    {
+        "name": "Eustass",
+        "role": 1010750030006718524,
+        "tier": 4,
+        "stats": [
+            "+2 Strength",
+            "+1 Speed"
+        ]
+    },
+    {
+        "name": "Nefeltari",
+        "role": 1010765503117131850,
+        "tier": 5,
+        "stats": [
+            "+2 Jump Boost"
+        ]
+    },
+    {
+        "name": "Son of Thors",
+        "role": 1011163234931314698,
+        "tier": 2,
+        "stats": [
+            "+3 Haste",
+            "+4 Speed",
+            "+3 Jump Boost"
+        ]
+    },
+    {
+        "name": "Thunder King",
+        "role": 1011171697371664474,
+        "tier": 3,
+        "stats": [
+            "+3 Speed",
+            "+2 Jump Boost"
+        ]
+    },
+    {
+        "name": "Devil Hunter",
+        "role": 1011173545969205258,
+        "tier": 5,
+        "stats": [
+            "+1 Strength",
+            "+1 Speed"
+        ]
+    },
+    {
+        "name": "Devilman",
+        "role": 1011171745371271242,
+        "tier": 4,
+        "stats": [
+            "+2 Strength"
+        ]
+    },
+    {
+        "name": "Strongest Soldier",
+        "role": 1011176071397376002,
+        "tier": 3,
+        "stats": [
+            "+1 Strength",
+            "+2 Speed"
+        ]
+    },
+    {
+        "name": "Champion",
+        "role": 1011176087692255273,
+        "tier": 3,
+        "stats": [
+            "+3 Strength"
+        ]
+    },
+    {
+        "name": "Vessel",
+        "role": 1011178896445685792,
+        "tier": 4,
+        "stats": [
+            "+2 Strength",
+            "+1 Speed",
+            "+1 Jump Boost"
+        ]
+    },
+    {
+        "name": "Boxer",
+        "role": 1012131863084675223,
+        "tier": 5,
+        "stats": [
+            "+2 Haste"
+        ]
+    },
+    {
+        "name": "Adventurer",
+        "role": 1012131867400609832,
+        "tier": 5,
+        "stats": [
+            "+1 Haste",
+            "+1 Speed"
+        ]
+    },
+    {
+        "name": "Hunter",
+        "role": 1012131871074828328,
+        "tier": 4,
+        "stats": [
+            "+2 Strength",
+            "+3 Jump Boost"
+        ]
+    },
+    {
+        "name": "Flame Alchemist",
+        "role": 1012131874409295915,
+        "tier": 3,
+        "stats": [
+            "+1 Fire Resistance",
+            "+1 Resistance",
+            "+1 Speed",
+            "+1 Saturation"
+        ]
+    },
+    {
+        "name": "Homunculus",
+        "role": 1012131877857001666,
+        "tier": 3,
+        "stats": [
+            "+2 Speed",
+            "+1 Strength",
+            "+2 Regeneration"
+        ]
+    },
+    {
+        "name": "Merchant",
+        "role": 1012131881644458045,
+        "tier": 3,
+        "stats": [
+            "+1 Resistance",
+            "+2 Regeneration"
+        ]
+    },
+    {
+        "name": "Vampire",
+        "role": 1012131890213421207,
+        "tier": 2,
+        "stats": [
+            "+2 Strength",
+            "+2 Regeneration",
+            "+2 Speed"
+        ]
+    },
+    {
+        "name": "Sengoku",
+        "role": 1012131894072188968,
+        "tier": 1,
+        "stats": [
+            "+2 Resistance",
+            "+3 Regeneration",
+            "+1 Saturation"
+        ]
+    },
+    {
+        "name": "Fullmetal Alchemist",
+        "role": 1011178899742400562,
+        "tier": 2,
+        "stats": [
+            "+2 Resistance",
+            "+1 Saturation"
+        ]
+    }
+]

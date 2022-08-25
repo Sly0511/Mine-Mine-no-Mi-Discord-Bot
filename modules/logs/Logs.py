@@ -23,7 +23,8 @@ class Logs(commands.Cog):
         await self.bot.modules_ready.wait()
         self.logs = logs
 
-    @app_commands.command(name="logs", description="Get player detailed logs.")
+    @app_commands.command(name="check_logs", description="Get player detailed logs.")
+    @app_commands.checks.has_role(996679867334660192)
     async def logs_command(self, interaction, player: str):
         player: PlayerData = get(self.players, uuid=player)
         if not player:
@@ -41,7 +42,9 @@ class Logs(commands.Cog):
                 if player.name in line:
                     log_file += line + "\n"
         await interaction.response.send_message(
-            file=File(BytesIO(log_file.encode()), filename="test.log"), ephemeral=True
+            content="Here's the logs for {}:".format(player.name),
+            file=File(BytesIO(log_file.encode()), filename="test.log"),
+            ephemeral=True,
         )
 
     @logs_command.autocomplete("player")
@@ -49,3 +52,7 @@ class Logs(commands.Cog):
         """Autocomplete for the player command."""
         players = list(filter(lambda x: x.name.lower().startswith(current.lower()), self.players))
         return [app_commands.Choice(name=player.name, value=player.uuid) for player in players][:25]
+
+
+async def setup(bot):
+    await bot.add_cog(Logs(bot))

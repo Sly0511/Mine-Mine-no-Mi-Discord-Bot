@@ -1,7 +1,6 @@
 import asyncio
 from pathlib import Path
 
-import asqlite
 import discord
 import yaml
 from aiohttp import ClientSession
@@ -12,6 +11,7 @@ from utils.FTPImpl import FTPServer
 from utils.configs import BotConfig
 from utils.functions import get_modules
 from utils.objects import Object, Translator
+from utils.tree import Tree
 
 
 class MineMineNoMi(commands.Bot):
@@ -24,6 +24,7 @@ class MineMineNoMi(commands.Bot):
             intents=discord.Intents.all(),
             chunk_guilds_at_startup=True,
             allowed_mentions=discord.AllowedMentions(replied_user=False),
+            tree_cls=Tree,
         )
         self.modules_ready = asyncio.Event()
         self.path = Path(__file__).parent
@@ -43,13 +44,14 @@ class MineMineNoMi(commands.Bot):
         self.GOLDEN_COLOR = 0xFFD700
         self.constants.RSession = ClientSession()
         self.constants.FTPServer = FTPServer(self.config.ftp).connect()
+        self.constants.FTPServer.stat_cache.max_age = 60 * 4
+        # self.constants.RealTimeFTPServer = FTPServer(self.config.ftp).connect()
+        # self.constants.RealTimeFTPServer.stat_cache.max_age = 15
 
-    async def load_database(self):
-        database_path = self.path.joinpath("database/data.db")
-        database_path.parent.mkdir(parents=True, exist_ok=True)
-        self.db = await asqlite.connect(database_path)
-        print("Connected to database.")
-        await database.build(self.db)
+    async def build_database(self):
+        self.db_path = self.path.joinpath("database/data.db")
+        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        await database.build(self.db_path)
 
     async def load_locales(self):
         self.locale = Translator(self)
@@ -65,7 +67,7 @@ class MineMineNoMi(commands.Bot):
     async def setup_hook(self):
         """Bot's startup function."""
         await self.setup_constants()
-        await self.load_database()
+        await self.build_database()
         await self.load_locales()
         await self.load_modules()
 

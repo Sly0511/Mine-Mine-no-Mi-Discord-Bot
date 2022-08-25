@@ -1,10 +1,58 @@
 from datetime import datetime, timedelta
+from io import BytesIO
+from random import randint
+from uuid import UUID
 
+import matplotlib.pyplot as plt
 import utils.database as db
-from discord import Embed, app_commands
+from discord import ButtonStyle, Embed, File, app_commands
 from discord.ext import commands
+from discord.ui import Modal, TextInput, View, button
 from discord.utils import get
+from mcrcon import MCRcon, MCRconException
 from utils.objects import Factions, PlayerData
+
+
+class InsertCodeModal(Modal, title="Code Input"):
+    sent_code = TextInput(
+        label="Input the code that you were sent in-game", min_length=4, max_length=4, placeholder="1234"
+    )
+
+    def __init__(self, bot, player, code: int):
+        super().__init__()
+        self.bot = bot
+        self.player = player
+        self.code = code
+
+    async def on_submit(self, interaction) -> None:
+        try:
+            if int(self.sent_code.value) != self.code:
+                raise Exception("Wrong!")
+            if await db.players.get_player_by_name(self.bot.db_path, self.player[0]) is None:
+                await db.players.insert_player(self.bot.db_path, self.player[1], self.player[0])
+            await db.players.update_player_discord_id(self.bot.db_path, self.player[1], self.player[2].id)
+            await interaction.response.send_message("Player linked to discord account.")
+        except ValueError:
+            return await interaction.response.send_message("The value input was not correct.")
+
+
+class CodeButton(View):
+    def __init__(self, bot, player, code):
+        super().__init__()
+        self.bot = bot
+        self.player = player
+        self.code = code
+
+    async def interaction_check(self, interaction):
+        if self.player[2].id != interaction.user.id:
+            await interaction.response.send_message("You can't interact with this button.", ephemeral=True)
+            return False
+        return True
+
+    @button(label="Input code", style=ButtonStyle.green)
+    async def submit_code(self, interaction, button):
+        await interaction.response.send_modal(InsertCodeModal(self.bot, self.player, self.code))
+        self.stop()
 
 
 class Players(commands.Cog):
@@ -64,19 +112,6 @@ class Players(commands.Cog):
         players = list(filter(lambda x: x.name.lower().startswith(current.lower()), self.players))
         return [app_commands.Choice(name=player.name, value=player.uuid) for player in players][:25]
 
-    @app_commands.command(name="link_player", description="Link a player to a discord account.")
-    async def link_player(self, interaction, *, player: str):
-        """Links a player to a discord account."""
-        player: PlayerData = get(self.players, uuid=player)
-        await db.players.update_player_discord_id(self.bot.db, player.uuid, interaction.user.id)
-        await interaction.response.send_message("Player linked to discord account.")
-
-    @link_player.autocomplete("player")
-    async def link_player_autocomplete(self, ctx, current: str):
-        """Autocomplete for the player command."""
-        players = list(filter(lambda x: x.name.lower().startswith(current.lower()), self.players))
-        return [app_commands.Choice(name=player.name, value=player.uuid) for player in players][:25]
-
     @app_commands.command(name="check_mob_kills", description="Get player mob kills.")
     async def get_mob_kills(self, interaction, *, player: str):
         """Gets a player's mob kills."""
@@ -111,6 +146,59 @@ class Players(commands.Cog):
                 embed.description += f"{player.name}\n"
         embed.description += "```"
         await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="factions_population", description="Shows population distribution across factions.")
+    async def get_factions_population(self, interaction):
+        pirates = [p for p in self.players if p.faction == Factions.Pirate]
+        marines = [p for p in self.players if p.faction == Factions.Marine]
+        revolut = [p for p in self.players if p.faction == Factions.Revolutionary]
+        bounthr = [p for p in self.players if p.faction == Factions.BountyHunter]
+        populations = [len(pirates), len(marines), len(revolut), len(bounthr)]
+        labels = ["Pirates", "Marines", "Revolutionaries", "Bounty hunters"]
+        colors = ["#6b0700", "#00276b", "#8a2801", "#256b00"]
+        _, ax1 = plt.subplots()
+        _, texts, autotexts = ax1.pie(populations, colors=colors, labels=labels, autopct="%1.1f%%", startangle=90)
+        for text in texts:
+            text.set_color("#ccc")
+        for autotext in autotexts:
+            autotext.set_color("#ccc")
+        centre_circle = plt.Circle((0, 0), 0.70, fc="#0000")
+        fig = plt.gcf()
+        fig.gca().add_artist(centre_circle)
+        ax1.axis("equal")
+        image = BytesIO()
+        plt.savefig(image, facecolor="#0000", format="PNG")
+        image.seek(0)
+        await interaction.response.send_message(file=File(image, filename="factions.png"))
+
+    @app_commands.command(name="link_player", description="Link a player to a discord account.")
+    async def link_player(self, interaction, *, player: str):
+        """Links a player to a discord account."""
+        await interaction.response.defer()
+        async with self.bot.constants.RSession.get(f"https://api.mojang.com/users/profiles/minecraft/{player}") as p:
+            if p.status in (204, 400):
+                return await interaction.response.send_message("Please provide a valid username.")
+            player = await p.json()
+            player = (player["name"], str(UUID(player["id"])), interaction.user)
+        code = randint(1000, 9999)
+        with MCRcon(
+            host=self.bot.config.server_ip, password=self.bot.config.rcon_password, port=self.bot.config.rcon_port
+        ) as rcon:
+            try:
+                rcon.command(f"/msg {player[0]} Your Discord link code: {code}")
+            except MCRconException:
+                return await interaction.followup.send(f"The {self.bot.config.server_name} server isn't responding.")
+        embed = Embed(title="Discord Account Link")
+        embed.description = (
+            'A code was sent to you via private message in minecraft. Click "Input code" and put the code in the box.'
+        )
+        await interaction.followup.send(view=CodeButton(self.bot, player, code), embed=embed, ephemeral=True)
+
+    @link_player.autocomplete("player")
+    async def link_player_autocomplete(self, ctx, current: str):
+        """Autocomplete for the player command."""
+        players = list(filter(lambda x: x.name.lower().startswith(current.lower()), self.players))
+        return [app_commands.Choice(name=player.name, value=player.name) for player in players][:25]
 
 
 async def setup(bot):

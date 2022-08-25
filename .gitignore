@@ -5,3 +5,4 @@ mineminenomi*
 __pycache__
 cache
 /database/
+modules/races_and_bloodlines/users_data.json
