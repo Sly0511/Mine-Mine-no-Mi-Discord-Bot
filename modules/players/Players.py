@@ -4,12 +4,12 @@ from random import randint
 from uuid import UUID
 
 import matplotlib.pyplot as plt
-import utils.database as db
 from discord import ButtonStyle, Embed, File, app_commands
 from discord.ext import commands
 from discord.ui import Modal, TextInput, View, button
 from discord.utils import get
 from mcrcon import MCRcon, MCRconException
+from utils.database.models import Players as PlayersDB
 from utils.objects import Factions, PlayerData
 
 
@@ -28,9 +28,20 @@ class InsertCodeModal(Modal, title="Code Input"):
         try:
             if int(self.sent_code.value) != self.code:
                 raise Exception("Wrong!")
-            if await db.players.get_player_by_name(self.bot.db_path, self.player[0]) is None:
-                await db.players.insert_player(self.bot.db_path, self.player[1], self.player[0])
-            await db.players.update_player_discord_id(self.bot.db_path, self.player[1], self.player[2].id)
+            prev_link = await PlayersDB.find_one(PlayersDB.discord_id == interaction.user.id)
+            player = await PlayersDB.find_one(PlayersDB.name == self.player[0])
+            if player is None:
+                await PlayersDB(uuid=self.player[1], name=self.player[0]).insert()
+            player = await PlayersDB.find_one(PlayersDB.name == self.player[0])
+            if prev_link:
+                if prev_link.uuid == player.uuid:
+                    return await interaction.response.send_message("You have already linked your discord account.")
+                else:
+                    return await interaction.response.send_message(
+                        "This discord account is already linked to another player."
+                    )
+            player.discord_id = interaction.user.id
+            await player.save()
             await interaction.response.send_message("Player linked to discord account.")
         except ValueError:
             return await interaction.response.send_message("The value input was not correct.")

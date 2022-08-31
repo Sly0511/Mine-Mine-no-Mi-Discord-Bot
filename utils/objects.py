@@ -118,7 +118,7 @@ class Bloodline(RaceBlood):
         values["tier_name"] = Rarities(values["tier"]).name
         values["format_name"] = (6 - values["tier"]) * "⭐" + " " + values["name"]
         values["Rformat_name"] = values["name"] + " " + (6 - values["tier"]) * "⭐"
-        values["color"] = getattr(RarityColors, values["tier_name"]).value
+        values["mc_color"] = getattr(RarityColors, values["tier_name"]).value
         return values
 
 
@@ -151,9 +151,8 @@ class Crew(BaseModel):
 
 class MinecraftPlayer(BaseModel):
     uuid: str
-    discord_id: Optional[int]
     name: str
-    crew: Optional[str]
+    discord_id: Optional[int]
     last_updated: datetime
 
 

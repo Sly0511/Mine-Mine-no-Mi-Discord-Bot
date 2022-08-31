@@ -9,10 +9,10 @@ from ftputil import FTPHost
 from nbt import nbt
 from nbt.nbt import TAG_Byte, TAG_Compound, TAG_Double, TAG_Float, TAG_Int, TAG_List, TAG_Long, TAG_String
 
-import utils.database as db
 from utils.configs import FTPConfig
 from utils.FTPImpl import FTPServer
 from utils.objects import MinecraftPlayer, Module
+from utils.database.models import Players
 
 
 def chunks(l: Iterable, n: int) -> Iterable:
@@ -52,19 +52,20 @@ def get_modules(path: Path) -> Iterable[Module]:
         yield Module(base_path=path.parent, path=module)
 
 
-async def get_mc_player(database, session: ClientSession, player_id: str) -> MinecraftPlayer:
+async def get_mc_player(session: ClientSession, player_id: str) -> MinecraftPlayer:
     """Get a player from the api."""
-    player = await db.players.get_player(database, player_id)
-    if player is None or datetime.fromisoformat(player["last_updated"]) < datetime.now() - timedelta(days=1):
+    player = await Players.find_one(Players.uuid == player_id)
+    if player is None or datetime.utcfromtimestamp(player.last_updated) < datetime.now() - timedelta(days=1):
         async with session.get(f"https://sessionserver.mojang.com/session/minecraft/profile/{player_id}") as request:
             response = await request.json()
-            await db.players.insert_player(
-                database,
-                player_id,
-                response["name"],
-            )
-    player = await db.players.get_player(database, player_id)
-    return MinecraftPlayer(**player)
+            if player is None:
+                player = Players(uuid=player_id, name=response["name"], last_updated=int(datetime.utcnow().timestamp()))
+            else:
+                player.name = response["name"]
+            await player.save()
+    return MinecraftPlayer(
+        uuid=player.uuid, name=player.name, discord_id=player.discord_id, last_updated=player.last_updated
+    )
 
 
 def read_ftp_file(server: FTPHost, path: Path):

@@ -15,6 +15,7 @@ from nbt.nbt import NBTFile
 from utils.converters import get_uuid_from_parts
 from utils.functions import convert_nbt_to_dict, download_ftp_file, get_mc_player
 from utils.objects import DevilFruit, PlayerData
+from utils.database.models import Players
 
 
 class Tasks(commands.Cog):
@@ -89,7 +90,7 @@ class Tasks(commands.Cog):
             abilities = forgeCaps["mineminenomi:ability_data"]["unlocked_abilities"]
             haoshoku = bool([x for x in abilities if x["name"] == "haoshoku_haki"])
             uuid = get_uuid_from_parts(nbt_data["UUIDMost"], nbt_data["UUIDLeast"])
-            mc_data = await get_mc_player(self.bot.db_path, self.bot.constants.RSession, uuid)
+            mc_data = await get_mc_player(self.bot.constants.RSession, uuid)
             player = PlayerData(
                 uuid=uuid,
                 name=mc_data.name,

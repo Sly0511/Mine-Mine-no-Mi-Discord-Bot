@@ -2,13 +2,15 @@ import asyncio
 from pathlib import Path
 
 import discord
+import motor
 import yaml
 from aiohttp import ClientSession
+from beanie import init_beanie
 from discord.ext import commands
 
-from utils import database
-from utils.FTPImpl import FTPServer
 from utils.configs import BotConfig
+from utils.database.models import Players, Users
+from utils.FTPImpl import FTPServer
 from utils.functions import get_modules
 from utils.objects import Object, Translator
 from utils.tree import Tree
@@ -45,13 +47,10 @@ class MineMineNoMi(commands.Bot):
         self.constants.RSession = ClientSession()
         self.constants.FTPServer = FTPServer(self.config.ftp).connect()
         self.constants.FTPServer.stat_cache.max_age = 60 * 4
-        # self.constants.RealTimeFTPServer = FTPServer(self.config.ftp).connect()
-        # self.constants.RealTimeFTPServer.stat_cache.max_age = 15
 
     async def build_database(self):
-        self.db_path = self.path.joinpath("database/data.db")
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        await database.build(self.db_path)
+        client = motor.motor_asyncio.AsyncIOMotorClient()
+        await init_beanie(database=client.mmnm, document_models=[Players, Users])
 
     async def load_locales(self):
         self.locale = Translator(self)
