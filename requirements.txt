@@ -3,6 +3,7 @@ git+https://github.com/Rapptz/asqlite
 NBT==1.5.1
 PyYAML==6.0
 pydantic
-ftputil
+aioftp
 mcrcon
 beanie
+numpy

@@ -10,9 +10,8 @@ from discord.ext import commands
 
 from utils.configs import BotConfig
 from utils.database.models import Players, Users
-from utils.FTPImpl import FTPServer
 from utils.functions import get_modules
-from utils.objects import Object, Translator
+from utils.objects import FTPServer, Object, Translator
 from utils.tree import Tree
 
 
@@ -45,8 +44,7 @@ class MineMineNoMi(commands.Bot):
         self.constants = Object()
         self.GOLDEN_COLOR = 0xFFD700
         self.constants.RSession = ClientSession()
-        self.constants.FTPServer = FTPServer(self.config.ftp).connect()
-        self.constants.FTPServer.stat_cache.max_age = 60 * 4
+        self.FTPServer = FTPServer(self.config.ftp)
 
     async def build_database(self):
         client = motor.motor_asyncio.AsyncIOMotorClient()

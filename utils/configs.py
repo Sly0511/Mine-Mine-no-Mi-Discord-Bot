@@ -15,15 +15,16 @@ class FTPConfig(BaseModel):
     password: str
     port: int
 
-
 class BotConfig(BaseModel):
     language: str
+    linux_user: str
     server_name: str
     server_ip: str
     server_port: int
     server_path: Path
     world_name: str
     modpack_download: str
+    rcon_ip: str
     rcon_port: int
     rcon_password: str
     discord_api_key: str

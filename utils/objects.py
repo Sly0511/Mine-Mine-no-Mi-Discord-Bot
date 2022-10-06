@@ -1,5 +1,6 @@
+import asyncio
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 from enum import Enum
@@ -8,28 +9,37 @@ from discord import Locale, app_commands
 from pydantic import BaseModel, root_validator
 from json import load
 from utils.converters import get_uuid_from_parts
+from utils.configs import FTPConfig
+from aioftp import Client
+from io import BytesIO
 
 
 class Object:
     ...
 
 
-class Rarities(Enum):
-    Godlike = 0
-    Mythic = 1
-    Legendary = 2
-    Epic = 3
-    Rare = 4
-    Common = 5
+class FTPServer:
+    def __init__(self, ftp_config: FTPConfig):
+        self.ftp = ftp_config
 
+    async def download_player_data(self, path):
+        cache = Path("cache/player_data")
+        async with Client.context(self.ftp.host, self.ftp.port, self.ftp.username, self.ftp.password) as client:
+            for path, info in await client.list(path):
+                if info["type"] == "file" and path.suffix == ".dat":
+                    last_modified = datetime.strptime(info["modify"], "%Y%m%d%H%M%S")
+                    cached_file = cache.joinpath(path.name)
+                    if (
+                        not cached_file.exists()
+                        or last_modified > datetime.utcnow() - timedelta(minutes=10)
+                        or info["size"] != cached_file.stat().st_size
+                    ):
+                        await client.download(path, cached_file, write_into=True)
 
-class RarityColors(Enum):
-    Godlike = "§0"
-    Mythic = "§4"
-    Legendary = "§6"
-    Epic = "§5"
-    Rare = "§1"
-    Common = "§2"
+    async def get_file(self, path):
+        async with Client.context(self.ftp.host, self.ftp.port, self.ftp.username, self.ftp.password) as client:
+            raw_data = await client.download_stream(path)
+            return await raw_data.read()
 
 
 class Races(Enum):
@@ -46,10 +56,10 @@ class subRaces(Enum):
 
 
 class Factions(Enum):
-    Marine = "marine"
     Pirate = "pirate"
-    BountyHunter = "bounty_hunter"
+    Marine = "marine"
     Revolutionary = "revolutionary"
+    BountyHunter = "bounty_hunter"
 
 
 class FightingStyles(Enum):
@@ -74,6 +84,8 @@ class PlayerData(BaseModel):
     race: Optional[Races]
     sub_race: Optional[subRaces]
     faction: Optional[Factions]
+    fighting_style: Optional[FightingStyles]
+    inventory: list[dict]
     devil_fruits: list[DevilFruit]
     eaten_devil_fruits: list[DevilFruit]
     inventory_devil_fruits: list[DevilFruit]
@@ -85,41 +97,11 @@ class PlayerData(BaseModel):
     imbuing_haki: float
     observation_haki: float
     haoshoku_haki: bool
+    haki_limit: float
     mob_kills: dict
     discord_id: Optional[int]
     last_seen: datetime
-
-
-class RaceBlood(BaseModel):
-    name: str
-    tier: int
-    role: int
-    mc_color: str = None
-    tier_name: str = None
-    format_name: str = None
-    Rformat_name: str = None
-
-
-class Race(RaceBlood):
-    @root_validator(pre=True)
-    def setup_custom(cls, values: dict):
-        values["tier_name"] = Rarities(values["tier"] + 1).name
-        values["format_name"] = (5 - values["tier"]) * "⭐" + " " + values["name"]
-        values["Rformat_name"] = values["name"] + " " + (5 - values["tier"]) * "⭐"
-        values["mc_color"] = getattr(RarityColors, values["tier_name"]).value
-        return values
-
-
-class Bloodline(RaceBlood):
-    stats: list[str]
-
-    @root_validator(pre=True)
-    def setup_custom(cls, values: dict):
-        values["tier_name"] = Rarities(values["tier"]).name
-        values["format_name"] = (6 - values["tier"]) * "⭐" + " " + values["name"]
-        values["Rformat_name"] = values["name"] + " " + (6 - values["tier"]) * "⭐"
-        values["mc_color"] = getattr(RarityColors, values["tier_name"]).value
-        return values
+    inactive: bool
 
 
 class CrewMember(BaseModel):

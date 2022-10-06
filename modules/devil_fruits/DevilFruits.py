@@ -49,7 +49,8 @@ class devil_fruit_circulation(commands.Cog):
             self.df_message = await channel.send(embed=update)
         else:
             try:
-                await self.df_message.edit(embed=update)
+                if self.df_message.embeds[0] != update:
+                    await self.df_message.edit(embed=update)
             except NotFound:
                 self.df_message = await channel.send(embed=update)
         await self.df_message.edit(embed=update)

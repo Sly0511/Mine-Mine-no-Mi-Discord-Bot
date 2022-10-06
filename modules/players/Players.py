@@ -10,7 +10,7 @@ from discord.ui import Modal, TextInput, View, button
 from discord.utils import get
 from mcrcon import MCRcon, MCRconException
 from utils.database.models import Players as PlayersDB
-from utils.objects import Factions, PlayerData
+from utils.objects import Factions, FightingStyles, Races, PlayerData
 
 
 class InsertCodeModal(Modal, title="Code Input"):
@@ -40,6 +40,8 @@ class InsertCodeModal(Modal, title="Code Input"):
                     return await interaction.response.send_message(
                         "This discord account is already linked to another player."
                     )
+            if player.discord_id:
+                return await interaction.response.send_message("You already linked an account.")
             player.discord_id = interaction.user.id
             await player.save()
             await interaction.response.send_message("Player linked to discord account.")
@@ -76,6 +78,18 @@ class Players(commands.Cog):
         """Updates the devil fruit circulation."""
         await self.bot.modules_ready.wait()
         self.players = player_data
+        guild = self.bot.get_guild(self.bot.config.discord_server_id)
+        if not guild:
+            return
+        for player in player_data:
+            member = guild.get_member(player.discord_id)
+            if not member:
+                continue
+            if member.display_name != player.name:
+                try:
+                    await member.edit(nick=player.name)
+                except:
+                    pass
 
     @app_commands.command(name="check_player", description="Get player detailed data.")
     async def get_player(self, interaction, *, player: str):
@@ -97,23 +111,23 @@ class Players(commands.Cog):
             name="Inventory Devil Fruits",
             value="\u200b" + "\n".join([f.format_name for f in player.inventory_devil_fruits]),
         )
-        embed.add_field(name="Doriki", value=player.doriki)
-        embed.add_field(
-            name="Loyalty",
-            value=player.loyalty if player.faction == Factions.Marine else "N/A",
-        )
-        embed.add_field(name="Bounty", value=player.bounty)
-        embed.add_field(
-            name="Haki",
-            value=(
-                f"Hardening: {player.harderning_haki}\n"
-                + f"Imbuing: {player.imbuing_haki}\n"
-                + f"Observation: {player.observation_haki}\n"
-                + f"Conquerors: "
-                + ("Yes" if player.haoshoku_haki else "No")
-            ),
-        )
-        embed.add_field(name="Last Seen", value=player.last_seen)
+        # embed.add_field(name="Doriki", value=player.doriki)
+        # embed.add_field(
+        #     name="Loyalty",
+        #     value=player.loyalty if player.faction == Factions.Marine else "N/A",
+        # )
+        # embed.add_field(name="Bounty", value=player.bounty)
+        # embed.add_field(
+        #     name="Haki",
+        #     value=(
+        #         f"Hardening: {player.harderning_haki}\n"
+        #         + f"Imbuing: {player.imbuing_haki}\n"
+        #         + f"Observation: {player.observation_haki}\n"
+        #         + f"Conquerors: "
+        #         + ("Yes\n" if player.haoshoku_haki else "No\n")
+        #         + f"Haki Limit: {player.haki_limit}\n"
+        #     ),
+        # )
         embed.set_footer(text="UUID: {}".format(player.uuid))
         await interaction.response.send_message(embed=embed)
 
@@ -182,6 +196,56 @@ class Players(commands.Cog):
         image.seek(0)
         await interaction.response.send_message(file=File(image, filename="factions.png"))
 
+    @app_commands.command(
+        name="fighting_styles_population", description="Shows population distribution across fighting styles."
+    )
+    async def get_fighting_styles_population(self, interaction):
+        swordsman = [p for p in self.players if p.fighting_style == FightingStyles.Swordsman]
+        sniper = [p for p in self.players if p.fighting_style == FightingStyles.Sniper]
+        doctor = [p for p in self.players if p.fighting_style == FightingStyles.Doctor]
+        brawler = [p for p in self.players if p.fighting_style == FightingStyles.Brawler]
+        blackleg = [p for p in self.players if p.fighting_style == FightingStyles.BlackLeg]
+        artofweather = [p for p in self.players if p.fighting_style == FightingStyles.ArtofWeather]
+        populations = [len(swordsman), len(sniper), len(doctor), len(brawler), len(blackleg), len(artofweather)]
+        labels = ["Swordsman", "Sniper", "Doctor", "Brawler", "Black Leg", "Art of Weather"]
+        _, ax1 = plt.subplots()
+        _, texts, autotexts = ax1.pie(populations, labels=labels, autopct="%1.1f%%", startangle=90)
+        for text in texts:
+            text.set_color("#ccc")
+        for autotext in autotexts:
+            autotext.set_color("#ccc")
+        centre_circle = plt.Circle((0, 0), 0.70, fc="#0000")
+        fig = plt.gcf()
+        fig.gca().add_artist(centre_circle)
+        ax1.axis("equal")
+        image = BytesIO()
+        plt.savefig(image, facecolor="#0000", format="PNG")
+        image.seek(0)
+        await interaction.response.send_message(file=File(image, filename="fighting_styles.png"))
+
+    @app_commands.command(name="races_population", description="Shows population distribution across races.")
+    async def get_fighting_styles_population(self, interaction):
+        human = [p for p in self.players if p.race == Races.Human]
+        cyborg = [p for p in self.players if p.race == Races.Cyborg]
+        mink = [p for p in self.players if p.race == Races.Mink]
+        fishman = [p for p in self.players if p.race == Races.Fishman]
+        populations = [len(human), len(cyborg), len(mink), len(fishman)]
+        labels = ["Human", "Cyborg", "Mink", "Fishman"]
+        _, ax1 = plt.subplots()
+        _, texts, autotexts = ax1.pie(populations, labels=labels, autopct="%1.1f%%", startangle=90)
+        for text in texts:
+            text.set_color("#ccc")
+        for autotext in autotexts:
+            autotext.set_color("#ccc")
+        centre_circle = plt.Circle((0, 0), 0.70, fc="#0000")
+        fig = plt.gcf()
+        fig.gca().add_artist(centre_circle)
+        ax1.axis("equal")
+        image = BytesIO()
+        plt.savefig(image, facecolor="#0000", format="PNG")
+        image.seek(0)
+        await interaction.response.send_message(file=File(image, filename="races.png"))
+
     @app_commands.command(name="link_player", description="Link a player to a discord account.")
     async def link_player(self, interaction, *, player: str):
         """Links a player to a discord account."""
@@ -193,7 +257,7 @@ class Players(commands.Cog):
             player = (player["name"], str(UUID(player["id"])), interaction.user)
         code = randint(1000, 9999)
         with MCRcon(
-            host=self.bot.config.server_ip, password=self.bot.config.rcon_password, port=self.bot.config.rcon_port
+            host=self.bot.config.rcon_ip, password=self.bot.config.rcon_password, port=self.bot.config.rcon_port
         ) as rcon:
             try:
                 rcon.command(f"/msg {player[0]} Your Discord link code: {code}")

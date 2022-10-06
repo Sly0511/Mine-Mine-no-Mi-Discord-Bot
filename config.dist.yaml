@@ -1,13 +1,15 @@
 # General #
 language: "american_english"
+linux_user: "user"
 
 # Minecraft #
 server_name: "" # Name of the server
-server_ip: "" # Ip of the server
+server_ip: "0.0.0.0" # Ip of the server
 server_port: 25565
 server_path: "" # Path in which server is located relative to the bot (FTP usually is empty)
 world_name: "world" # Name of the world save
 modpack_download: "" # URL to download modpack
+rcon_ip: "0.0.0.0"
 rcon_port: 25575
 rcon_password: "admin"
 

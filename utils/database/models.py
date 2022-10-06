@@ -22,6 +22,7 @@ class Cooldowns(BaseModel):
 
 class Economy(BaseModel):
     balance: int = 0
+    boost_count: int = 0
 
 
 class Users(Document):

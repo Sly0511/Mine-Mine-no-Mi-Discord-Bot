@@ -3,7 +3,6 @@ import gzip
 import json
 import re
 from datetime import datetime, timedelta
-from functools import partial
 from io import BytesIO
 from pathlib import Path
 from random import sample
@@ -13,18 +12,19 @@ from discord.ext import commands, tasks
 from discord.utils import get
 from nbt.nbt import NBTFile
 from utils.converters import get_uuid_from_parts
-from utils.functions import convert_nbt_to_dict, download_ftp_file, get_mc_player
+from utils.functions import convert_nbt_to_dict, open_file, get_mc_player
 from utils.objects import DevilFruit, PlayerData
-from utils.database.models import Players
 
 
 class Tasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.fruits = list(self.list_devil_fruits(json.load(open("resources/fruits.json"))))
-        self.nbt_path = "{0}/data/mineminenomi.dat".format(self.bot.config.world_name)
-        self.player_data_path = "{0}/playerdata/".format(self.bot.config.world_name)
-        self.player_stats_path = "{0}/stats/".format(self.bot.config.world_name)
+        self.nbt_path = Path(f"/default/{self.bot.config.world_name}/data/mineminenomi.dat")
+        self.player_data_path = Path(f"/default/{self.bot.config.world_name}/playerdata/")
+        self.cache_player_data_path = Path(f"/home/{self.bot.config.linux_user}/MMnM/cache/player_data/")
+        self.player_stats_path = Path(f"/default/{self.bot.config.world_name}/stats/")
+        self.logs_path = Path(f"default/logs")
         self.players = []
 
     async def cog_load(self):
@@ -44,59 +44,65 @@ class Tasks(commands.Cog):
             return
         linked_role = guild.get_role(self.bot.config.link_role)
         players = []
-        for player_data in self.bot.constants.FTPServer.listdir(self.player_data_path):
-            if not player_data.endswith(".dat"):
-                continue
-            last_seen = datetime.utcfromtimestamp(
-                self.bot.constants.FTPServer.lstat(self.player_data_path + player_data).st_mtime
-            )
-            cache_file = Path("cache/player_data/{0}".format(player_data))
-            nbt_bytes = download_ftp_file(
-                self.bot.constants.FTPServer,
-                self.player_data_path + player_data,
-                cache_file,
-            )
-            function = partial(
-                download_ftp_file, self.bot.constants.FTPServer, self.player_data_path + player_data, cache_file
-            )
-            nbt_bytes = await self.bot.loop.run_in_executor(None, function)
+        username_cache = json.loads(await self.bot.FTPServer.get_file(f"/default/usernamecache.json"))
+        mineminenomi_bytes = await self.bot.FTPServer.get_file(self.nbt_path)
+        mineminenomi_data = convert_nbt_to_dict(NBTFile(fileobj=BytesIO(mineminenomi_bytes)))
+        timed_out_fruits = {
+            get_uuid_from_parts(inventory["uuidMost"], inventory["uuidLeast"]): [
+                get(self.fruits, qualified_name=inventory[f"fruit-{fruit_n}"]) for fruit_n in range(inventory["fruits"])
+            ]
+            for inventory in mineminenomi_data["data"]["loggedoutFruits"]
+            if inventory["date"] / 1000 < (datetime.utcnow() - timedelta(days=3)).timestamp()
+        }
+        now = datetime.utcnow()
+        await self.bot.FTPServer.download_player_data(self.player_data_path)
+        for player_data in self.cache_player_data_path.glob("*.dat"):
+            last_time = datetime.utcfromtimestamp(int(player_data.lstat().st_mtime))
+            if old_player := get(self.players, uuid=player_data.stem):
+                if last_time < now - timedelta(days=5):
+                    players.append(old_player)
+                    continue
+            nbt_bytes = open_file(self.cache_player_data_path.joinpath(player_data))
             nbt_data = convert_nbt_to_dict(NBTFile(fileobj=BytesIO(nbt_bytes)))
-            player_uuid = player_data.split(".")[0]
-            cache_file = Path("cache/stats/{0}.json".format(player_uuid))
-            stats_data = download_ftp_file(
-                self.bot.constants.FTPServer, self.player_stats_path + player_uuid + ".json", cache_file, "r"
-            )
+            player_uuid = player_data.stem
+            stats_data = await self.bot.FTPServer.get_file(self.player_stats_path.joinpath(f"{player_uuid}.json"))
             stats_data = json.loads(stats_data)
             forgeCaps = nbt_data.get("ForgeCaps", {})
             if not forgeCaps:
                 continue
             # Devil Fruits
             eaten_devil_fruits = []
-            if fruit := get(
-                self.fruits,
-                qualified_name=forgeCaps["mineminenomi:devil_fruit"].get("devilFruit", ""),
-            ):
-                eaten_devil_fruits.append(fruit)
-            yami = forgeCaps["mineminenomi:devil_fruit"]["hasYamiPower"]
-            if yami:
-                eaten_devil_fruits.append(get(self.fruits, qualified_name="yami_yami"))
             inventory_devil_fruits = []
-            for item in nbt_data["Inventory"]:
-                if re.match(r"mineminenomi:([a-z_]+no_mi)", item["id"]):
-                    inventory_devil_fruits.append(get(self.fruits, name=item["id"].split(":")[1]))
+            if not timed_out_fruits.get(player_uuid):
+                yami = forgeCaps["mineminenomi:devil_fruit"]["hasYamiPower"]
+                if fruit := get(
+                    self.fruits,
+                    qualified_name=forgeCaps["mineminenomi:devil_fruit"].get("devilFruit", ""),
+                ):
+                    eaten_devil_fruits.append(fruit)
+                if yami:
+                    eaten_devil_fruits.append(get(self.fruits, qualified_name="yami_yami"))
+                for item in nbt_data["Inventory"]:
+                    if re.match(r"mineminenomi:([a-z_]+no_mi)", item["id"]):
+                        inventory_devil_fruits.append(get(self.fruits, name=item["id"].split(":")[1]))
             # Player Stats
             stats = forgeCaps["mineminenomi:entity_stats"]
             haki_stats = forgeCaps["mineminenomi:haki_data"]
             abilities = forgeCaps["mineminenomi:ability_data"]["unlocked_abilities"]
             haoshoku = bool([x for x in abilities if x["name"] == "haoshoku_haki"])
             uuid = get_uuid_from_parts(nbt_data["UUIDMost"], nbt_data["UUIDLeast"])
-            mc_data = await get_mc_player(self.bot.constants.RSession, uuid)
+            mc_data = await get_mc_player(username_cache, uuid)
+            total_haki = (
+                haki_stats["busoHardeningHakiExp"] + haki_stats["busoImbuingHakiExp"] + haki_stats["kenHakiExp"]
+            )
             player = PlayerData(
                 uuid=uuid,
                 name=mc_data.name,
                 race=stats["race"] or None,
                 sub_race=stats["subRace"] or None,
                 faction=stats["faction"] or None,
+                fighting_style=stats["fightingStyle"] or None,
+                inventory=nbt_data["Inventory"],
                 devil_fruits=eaten_devil_fruits + inventory_devil_fruits,
                 eaten_devil_fruits=eaten_devil_fruits,
                 inventory_devil_fruits=inventory_devil_fruits,
@@ -108,9 +114,11 @@ class Tasks(commands.Cog):
                 imbuing_haki=haki_stats["busoImbuingHakiExp"],
                 observation_haki=haki_stats["kenHakiExp"],
                 haoshoku_haki=haoshoku,
+                haki_limit=round(2200 + (total_haki * 32), 1),
                 mob_kills=stats_data.get("stats", {}).get("minecraft:killed", {}),
                 discord_id=mc_data.discord_id,
-                last_seen=last_seen,
+                last_seen=last_time,
+                inactive=last_time < now - timedelta(days=5),
             )
             players.append(player)
             if player.discord_id is not None and linked_role:
@@ -120,16 +128,18 @@ class Tasks(commands.Cog):
         self.bot.dispatch("player_data", players)
         self.players = players
 
+    # @read_mmnm_player_data.error()
+    # async def test(self, **kwargs):
+    #     print(kwargs)
+
     @tasks.loop(minutes=5)
     async def retrieve_logs(self):
         """Retrieves logs every 5 minutes."""
-        return
         await self.bot.modules_ready.wait()
+        return
         logs = []
-        for log in self.bot.constants.FTPServer.listdir("logs/"):
-            bytes_data = download_ftp_file(
-                self.bot.constants.FTPServer, "logs/" + log, Path("cache/logs/").joinpath(log)
-            )
+        for log in self.logs_path.iterdir():
+            bytes_data = open_file(log)
             log_string = re.search(r"(\d{4}-\d{2}-\d{2})-(\d{1,2})", log)
             if log_string is None:
                 if log == "latest.log":
